@@ -9,6 +9,7 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "format": "prettier --write .",
+    "prebuild": "npm run clean",
     "start:prod": "npm run build && npm run serve"
   },
   "engines": {
