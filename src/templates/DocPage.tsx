@@ -1,6 +1,7 @@
 import * as React from "react";
 import { graphql } from "gatsby";
 import DocsLayout from "../components/DocsLayout";
+import SEO from "../components/SEO";
 
 type PageProps = {
   children: React.ReactNode;
@@ -11,7 +12,12 @@ type PageProps = {
 
 const DocPage: React.FC<PageProps> = ({ data, children }) => {
   const title = data.mdx?.frontmatter?.title || undefined;
-  return <DocsLayout title={title}>{children}</DocsLayout>;
+  return (
+    <DocsLayout title={title}>
+      <SEO title={title} />
+      {children}
+    </DocsLayout>
+  );
 };
 
 export default DocPage;

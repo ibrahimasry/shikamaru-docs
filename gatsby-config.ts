@@ -38,6 +38,14 @@ const config: GatsbyConfig = {
       },
     },
     "gatsby-plugin-sitemap",
+    {
+      resolve: "gatsby-plugin-robots-txt",
+      options: {
+        host: "https://maru.ibrahimasry.com",
+        sitemap: "https://maru.ibrahimasry.com/sitemap-index.xml",
+        policy: [{ userAgent: "*", allow: "/" }],
+      },
+    },
   ],
 };
 export default config;
