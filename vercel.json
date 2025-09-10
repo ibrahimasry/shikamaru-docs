@@ -7,5 +7,8 @@
       "config": { "distDir": "public" }
     }
   ],
+  "env": {
+    "NODE_VERSION": "18"
+  },
   "routes": [{ "src": "/(.*)", "dest": "/$1" }]
 }
