@@ -107,7 +107,7 @@ const Footer: React.FC = () => (
   <footer className="border-t border-slate-200 mt-20">
     <div className="max-w-6xl mx-auto px-4 py-10 text-sm text-slate-500 flex items-center justify-between">
       <p>MIT © 2025 — shikamaru</p>
-      <p>Made with Gatsby & Tailwind</p>
+      <p>Made with love</p>
     </div>
   </footer>
 );
