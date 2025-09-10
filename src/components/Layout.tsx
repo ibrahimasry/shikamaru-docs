@@ -161,6 +161,7 @@ const Layout: React.FC<{
       <Helmet>
         <title>{title ? `${title} — shikamaru` : "shikamaru CLI"}</title>
         {description && <meta name="description" content={description} />}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Helmet>
       <Header onOpenSearch={() => setIsSearchOpen(true)} />
       <main>{children}</main>
