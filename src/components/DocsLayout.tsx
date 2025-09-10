@@ -72,6 +72,9 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
   const [searchQuery, setSearchQuery] = React.useState<string>("");
   const [currentPath, setCurrentPath] = React.useState<string | null>(null);
   const sidebarRef = React.useRef<HTMLDivElement | null>(null);
+  const [activeMobilePanel, setActiveMobilePanel] = React.useState<
+    "browse" | "read"
+  >("read");
 
   React.useEffect(() => {
     if (!contentRef.current) return;
@@ -202,8 +205,43 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
 
   return (
     <Layout title={title}>
+      <div className="md:hidden sticky top-16 z-30 bg-white/80 backdrop-blur border-b border-slate-200 supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/80 dark:supports-[backdrop-filter]:bg-slate-950/60 dark:border-slate-800">
+        <div className="max-w-6xl mx-auto px-4 py-2 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveMobilePanel("browse")}
+            className={
+              "flex-1 px-3 py-2 rounded-md text-sm border transition " +
+              (activeMobilePanel === "browse"
+                ? "bg-brand-50 text-brand-700 border-brand-200 dark:bg-slate-800 dark:text-brand-300 dark:border-slate-700"
+                : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-700")
+            }
+            aria-pressed={activeMobilePanel === "browse"}
+          >
+            Browse
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveMobilePanel("read")}
+            className={
+              "flex-1 px-3 py-2 rounded-md text-sm border transition " +
+              (activeMobilePanel === "read"
+                ? "bg-brand-50 text-brand-700 border-brand-200 dark:bg-slate-800 dark:text-brand-300 dark:border-slate-700"
+                : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-700")
+            }
+            aria-pressed={activeMobilePanel === "read"}
+          >
+            Read
+          </button>
+        </div>
+      </div>
       <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-12 gap-6">
-        <aside className="col-span-12 md:col-span-3 lg:col-span-3">
+        <aside
+          className={
+            "col-span-12 md:col-span-3 lg:col-span-3 order-1 md:order-none " +
+            (activeMobilePanel === "browse" ? "block" : "hidden md:block")
+          }
+        >
           <div className="sticky top-20">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <span className="text-slate-800 font-semibold dark:text-slate-200">
@@ -232,6 +270,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
                     <Link
                       key={item.path}
                       to={item.path}
+                      onClick={() => setActiveMobilePanel("read")}
                       activeClassName="bg-brand-50 text-brand-700 ring-1 ring-brand-100 dark:bg-slate-800 dark:text-brand-300"
                       className="block px-3 py-2 rounded-lg text-slate-700 hover:text-brand-700 hover:bg-brand-50 dark:text-slate-300 dark:hover:text-brand-300 dark:hover:bg-slate-800"
                     >
@@ -244,7 +283,10 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
         </aside>
         <article
           ref={contentRef}
-          className="col-span-12 md:col-span-8 lg:col-span-7 prose dark:prose-invert"
+          className={
+            "col-span-12 md:col-span-8 lg:col-span-7 prose dark:prose-invert order-2 md:order-none " +
+            (activeMobilePanel === "read" ? "block" : "hidden md:block")
+          }
         >
           {children}
           <div className="not-prose mt-12 pt-6 border-t border-slate-200 flex items-center justify-between text-sm dark:border-slate-800">

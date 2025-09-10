@@ -75,8 +75,10 @@ const Header: React.FC<{ onOpenSearch: () => void }> = ({ onOpenSearch }) => {
         <Link to="/" className="flex items-center gap-3" aria-label="Home">
           <img src="/0.png" alt="shikamaru" className="h-30 w-10 md:h-12" />
         </Link>
-        <nav className="hidden md:flex items-center gap-1">
-          <NavLink to="/#features">Features</NavLink>
+        <nav className="flex items-center gap-1 flex-shrink-0">
+          <span className="hidden sm:inline">
+            <NavLink to="/#features">Features</NavLink>
+          </span>
           <NavLink to="/docs/getting-started">Docs</NavLink>
         </nav>
         <div className="flex items-center gap-2">
@@ -103,7 +105,7 @@ const Header: React.FC<{ onOpenSearch: () => void }> = ({ onOpenSearch }) => {
             )}
           </button>
           <a
-            className="btn-ghost"
+            className="btn-ghost hidden sm:inline-flex"
             href="https://www.npmjs.com/package/shikamaru"
             target="_blank"
             rel="noreferrer"
@@ -113,7 +115,7 @@ const Header: React.FC<{ onOpenSearch: () => void }> = ({ onOpenSearch }) => {
             <SiNpm className="h-4 w-4" aria-hidden="true" />
           </a>
           <a
-            className="btn-cta"
+            className="btn-cta hidden sm:inline-flex"
             href="https://github.com/ibrahimasry/shikamaru"
             target="_blank"
             rel="noreferrer"
