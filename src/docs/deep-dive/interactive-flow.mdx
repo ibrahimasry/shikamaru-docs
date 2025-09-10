@@ -1,0 +1,142 @@
+---
+title: Deep Dive — Interactive Flow
+order: 102
+slug: deep-dive/interactive-flow
+---
+
+## Interactive Flow
+
+### 1) Profiles (optional)
+
+- What you see: Choose to load a saved profile or continue without one.
+- What happens: Loads prior selections or proceeds to fresh prompts; at end you can save a profile.
+- Files written/updated:
+  - `.shikamaru-profiles/profiles.json` in the current working directory when saving.
+- Code:
+
+```54:71:src/prompts-manager/ProfileManager.ts
+this.profilesPath = path.join(this.config.profilesDir, "profiles.json");
+fs.writeFileSync(this.profilesPath, JSON.stringify(profiles, null, 2));
+```
+
+### 2) Repo discovery
+
+- What you see: No prompt; the tool scans `projectsDir` for repos containing `.env.example`.
+- What happens: Repos collected; metadata cached for labels (Dockerfile, language).
+- Files: None.
+- Code:
+
+```1379:1390:src/prompts-manager/PromptsManager.ts
+.readdirSync(this.config.projectsDir)
+  .filter((f) => fs.statSync(p).isDirectory() && fs.existsSync(path.join(p, ".env.example")))
+```
+
+### 3) Repo selection (multi-select)
+
+- What you see: Searchable multi-select with fuzzy search; badges like 🐳 and language.
+- What happens: Selected repos become the working set.
+- Files: None.
+- Code:
+
+```1449:1461:src/prompts-manager/PromptsManager.ts
+promptConfig.searchable = true; promptConfig.highlight = true;
+const Fuse = (await import("fuse.js")).default;
+return this.toChoices(results);
+```
+
+### 4) Cloud & install options
+
+- What you see: Confirm to skip cloud env and/or dependency installation.
+- What happens: Applies `skipCloud` → `skipAzure`, and `skipInstall` in runtime config.
+- Files: None.
+- Code:
+
+```169:181:src/prompts-manager/PromptsManager.ts
+const { skipCloud, skipInstall } = await inquirer.default.prompt([...])
+```
+
+### 5) Execution mode
+
+- What you see: Select Local / Docker / Hybrid. Hybrid/local offer per-repo overrides and optional custom commands.
+- What happens: Sets `globalMode` and per-repo configs; may parse Dockerfile to infer commands.
+- Files: None.
+- Code:
+
+```244:266:src/prompts-manager/PromptsManager.ts
+type: "list", name: "globalMode", choices: [Local, Docker, Hybrid]
+```
+
+### 6) Ports management
+
+- What you see: Confirm whether to reuse existing ports.
+- What happens: Loads or generates port assignments (host typically 4000–5000).
+- Files written/updated:
+  - `ports-map.json` in `projectsDir`.
+- Code:
+
+```375:383:src/ports-manager/managers/PortsFileManager.ts
+await this.writeFileAtomic(content);
+```
+
+### 7) Logging interface
+
+- What you see: Choose Web or Terminal logs.
+- What happens: Sets `loggingConfig.mode` and starts API/UI for web mode.
+- Files: None.
+
+### 8) Environment files
+
+- What you see: No prompt; `.env` generated for each selected repo.
+- What happens: Merges `global.env` / `global.frontend.env` and `.env.example`.
+- Files written/updated:
+  - `[repo]/.env` next to each `.env.example`.
+- Code:
+
+```508:512:src/env-manager/EnvManager.ts
+await this.getFileWriter().writeFileAtomic(envPath, resolvedContent);
+```
+
+### 9) Docker compose (if needed)
+
+- What you see: No explicit prompt; based on mode and infra detection.
+- What happens: Generates infra compose and unified compose files.
+- Files written/updated:
+  - `docker-compose.infra.yml`
+  - `docker-compose.unified.yml`
+- Code:
+
+```158:166:src/modes/execution/services/InfraServiceManager.ts
+fs.writeFileSync(composePath, composeContent);
+```
+
+```375:382:src/modes/execution/services/DockerComposeManager.ts
+fs.writeFileSync(unifiedComposePath, composeContent, "utf-8");
+```
+
+### 10) Save profile (optional)
+
+- What you see: Prompt to save the current configuration.
+- What happens: Persists consolidated `promptSteps` including repos, unified config, skips, logging, and port reuse.
+- Files written/updated:
+  - `.shikamaru-profiles/profiles.json`.
+- Code:
+
+```262:271:src/prompts-manager/ProfileManager.ts
+await this.saveProfile(name, description, selectedRepos, unifiedConfig, cloudProviders, loggingConfig, portReusePreference);
+```
+
+---
+
+### Default inputs
+
+- `projectsDir`: Base directory for repo discovery.
+- `global.env` and `global.frontend.env`: Optional root-level env inputs.
+- `.env.example`: Required per selected repo for `.env` generation.
+
+### Artifacts summary
+
+- `.shikamaru-profiles/profiles.json`
+- `ports-map.json`
+- `[repo]/.env`
+- `docker-compose.infra.yml`
+- `docker-compose.unified.yml`

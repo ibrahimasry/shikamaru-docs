@@ -1,0 +1,21 @@
+---
+title: Configuration
+order: 3
+---
+
+# Configuration
+
+Config is interactive. Under the hood it sets:
+
+- Execution mode: `local` | `docker` | `hybrid`
+- Projects directory
+- Per-repo overrides
+- Logging: `terminal` | `web`
+- Docker compose generation
+- Health checks and auto-stop
+
+## Artifacts
+
+- `.env` per repo
+- `ports-map.json` (persistent ports)
+- `docker-compose.unified.yml` (docker/hybrid)

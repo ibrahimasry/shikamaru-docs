@@ -1,0 +1,30 @@
+---
+title: Commands
+order: 2
+---
+
+# Commands
+
+| Command   | Description                                  |
+| --------- | -------------------------------------------- |
+| `start`   | Start selected repos and infrastructure      |
+| `env`     | populate the env vars in every selected repo |
+| `profile` | Manage saved profiles                        |
+| `help`    | Show help                                    |
+| `version` | Show CLI version                             |
+
+## Global Options
+
+- `-v, --verbose` — verbose logging
+- `--projects-dir <path>` — base directory (default: `PROJECTS_DIR` or cwd)
+- `--skip-cloud` — ignore Azure/cloud vars
+- `-p, --profile <name>` — reuse a saved profile
+
+### Examples
+
+```bash
+maru start --verbose
+maru start --projects-dir ~/workspace
+maru start --skip-cloud
+maru start --profile "frontend+api"
+```

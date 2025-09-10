@@ -1,0 +1,30 @@
+---
+title: Getting Started
+order: 1
+---
+
+# Getting Started
+
+## Install
+
+```bash
+npm install -g shikamaru
+```
+
+## Quick Start
+
+1. Create `global.env` for backend services and `frontend.global.env` in your workspace root used as shared env for all services.
+2. (Optional) Set Azure envs: `ORG`, `PROJECT`, `AZURE_PERSONAL_ACCESS_TOKEN`.
+3. Run:
+
+```bash
+maru start
+```
+
+## What happens
+
+- Env checks (Node, Docker)
+- Repo + mode selection (`local` | `docker` | `hybrid`)
+- Port allocation and persistence
+- `.env` generation from `.env.example`
+- Start services + log viewer

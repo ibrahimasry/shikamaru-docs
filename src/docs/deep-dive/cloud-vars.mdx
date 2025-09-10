@@ -1,0 +1,121 @@
+---
+title: Deep Dive — Cloud Variables
+order: 103
+slug: deep-dive/cloud-vars
+---
+
+## Cloud variables and local.env
+
+### Sources
+
+- Local backend vars: `projectsDir/global.env`
+- Local frontend vars: `projectsDir/global.frontend.env`
+- Cloud vars: fetched from providers (default: Azure) by tier (develop/qa/prod)
+- Example placeholders: values from each repo’s `.env.example`
+
+### Tier and provider selection
+
+- If `--skip-cloud` is set, tier prompt is skipped and only local files are used.
+- Otherwise tier (develop/qa/prod) is prompted and cloud providers are queried for variables.
+- Azure PAT can be read from `global.env` via `AZURE_PERSONAL_ACCESS_TOKEN`.
+
+```255:266:src/env-manager/EnvManager.ts
+if (this.config.skipCloud) { this.state.tier = "develop"; return; }
+this.state.tier = await this.getConfigProvider().promptTier();
+```
+
+```373:377:src/env-manager/EnvManager.ts
+const azurePat = this.state.localConfig?.AZURE_PERSONAL_ACCESS_TOKEN;
+if (azurePat) { this.setAzurePat(azurePat); }
+```
+
+### Precedence rules
+
+- Frontend variables: local.frontend > cloud.front > example
+
+```186:199:src/env-manager/resolvers/EnvVariableResolver.ts
+const localFrontendVal = state.localFrontend?.[upperKey];
+if (localFrontendVal) { return localFrontendVal; }
+const azureVal = state.variableGroups.front[upperKey];
+if (azureVal) { return azureVal; }
+return exampleValue ?? "";
+```
+
+- Backend non-DB service URLs: try ports mapping first (build `http://localhost:<port>`), then local.backend > cloud.back > empty
+
+```209:229:src/env-manager/resolvers/EnvVariableResolver.ts
+const port = Object.keys(this.ports).find((key) => key.toLowerCase().includes(candidateService));
+if (port) { return `http://localhost:${this.ports[port]}`; }
+const localBackendVal = state.localBackend?.[key];
+if (localBackendVal) { return localBackendVal; }
+const azureVal = state.variableGroups.back[key];
+if (azureVal) { return azureVal; }
+return "";
+```
+
+- General fallback (non-service, non-DB): local.backend > cloud.back > example
+
+```263:287:src/env-manager/resolvers/EnvVariableResolver.ts
+const cloudVal = state.variableGroups.back[key];
+const localVal = state.localBackend?.[key];
+return localVal ?? cloudVal ?? exampleValue ?? "";
+```
+
+### Databases and infra decision
+
+- For DB/MQ keys (Postgres, TimescaleDB, Redis, RabbitMQ) the resolver:
+  1. Reads azure vs local values per key
+  2. Detects whether each host looks internal (localhost/internal/cluster/empty)
+  3. Produces a final config per service, and decides when to run infra locally via Docker
+
+- Internal host detection (simplified):
+
+```559:572:src/env-manager/resolvers/EnvVariableResolver.ts
+return (
+  host === "localhost" || host === "127.0.0.1" || host === "::1" ||
+  host.includes("internal") || host.includes("local") || host.includes("cluster") || !host.trim()
+);
+```
+
+- Final selection matrix:
+  - Both azure and local are internal → use docker defaults (and mark infra service to run)
+  - Azure internal, local external → use local
+  - Local internal, azure external → use azure
+  - Both external → prefer local
+
+```686:706:src/env-manager/resolvers/EnvVariableResolver.ts
+if (bothInternal) {
+  const dockerConfig = this.getDockerConfig(..., isDockerized);
+  group.final = { ...dockerConfig, source: "docker" };
+  state.internalServices.add(dbType as any);
+} else if (group.azure.isInternal && !group.local.isInternal) {
+  group.final = { ...group.local, source: "local" };
+} else if (!group.azure.isInternal && group.local.isInternal) {
+  group.final = { ...group.azure, source: "azure" };
+} else {
+  group.final = { ...group.local, source: "local" };
+}
+```
+
+- The `final` DB config then feeds the actual variable values (HOST/PORT/USER/PASSWORD/URL) written to each repo’s `.env`:
+
+```289:317:src/env-manager/resolvers/EnvVariableResolver.ts
+if (keyLower.includes("host")) return config.host || "";
+// ... port, username, password, database, connection_url
+```
+
+### What gets written
+
+- One `.env` per selected repo, next to `.env.example`, composed from the sources above.
+- If DBs are marked internal, infra is added to the internal services set; compose files may be generated for Docker/hybrid modes.
+
+### Flags and knobs
+
+- `--skip-cloud`: disables fetching cloud vars; only local files and defaults are used.
+- Profiles store whether cloud was used (`skipCloud`) and replay the same behavior when loaded.
+
+```169:191:src/prompts-manager/PromptsManager.ts
+const { skipCloud, skipInstall } = await inquirer.default.prompt([...])
+const cloudProviders = skipCloud ? undefined : ["azure"];
+return { skipCloud, skipInstall, cloudProviders };
+```

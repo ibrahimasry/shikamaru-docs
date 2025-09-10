@@ -1,0 +1,23 @@
+---
+title: Port Management
+order: 5
+---
+
+# Port Management
+
+- Host ports: **4000–5000** range
+- Persisted in `ports-map.json`
+- Auto conflict resolution
+
+## Example
+
+```json
+[
+  {
+    "Service": "campaign-management",
+    "Internal Port": 3000,
+    "Host Port": 4136,
+    "Mode": "docker"
+  }
+]
+```

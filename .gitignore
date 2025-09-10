@@ -1,0 +1,38 @@
+# Node dependencies
+node_modules/
+
+# Gatsby build and cache
+.cache/
+public/
+
+# Build outputs / distributions
+dist/
+coverage/
+
+# Local environment variables
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+
+# Package manager logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Editors/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+.npm-cache/
+*.pid
+*.seed
+*.tgz
+

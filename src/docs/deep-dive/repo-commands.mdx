@@ -1,0 +1,113 @@
+---
+title: Deep Dive — Repo Commands
+order: 101
+slug: deep-dive/repo-commands
+---
+
+## Repo install/build/start commands
+
+### Where commands come from
+
+Order of precedence (highest first):
+
+1. User overrides picked during prompts (per-repo or global)
+2. FrameworkDetector heuristics (e.g., npm/yarn/pnpm, dotnet, maven/gradle, etc.)
+3. Dockerfile-derived defaults (parsed RUN/CMD/ENTRYPOINT) when available
+4. Docker defaults (`docker-compose` commands) if repo runs in Docker mode
+
+```898:930:src/modes/execution/services/AppServiceManager.ts
+// getExecutionConfig() merges repo overrides with global defaults
+// returns mode, installCommand, startupCommand, and source
+```
+
+### Install command
+
+- Skipped when:
+  - `--skip-cloud` doesn’t affect install; `--skip-install` does
+  - Repo is in Docker mode (containers handle builds)
+- Otherwise resolved as:
+  - Custom per-repo or global install command if provided
+  - Else `FrameworkDetector` infers (npm/yarn/pnpm, pip/poetry, dotnet restore, mvn/gradle, etc.)
+
+```384:423:src/modes/execution/services/AppServiceManager.ts
+if (this.config.getSkipInstall()) shouldInstall = false;
+else if (execCfg.mode === "docker") shouldInstall = false;
+```
+
+```440:456:src/modes/execution/services/AppServiceManager.ts
+const installCommand = execCfg.installCommand ?? fw?.installCommand ?? null;
+```
+
+```547:557:src/modes/execution/services/FrameworkDetector.ts
+if (fs.existsSync(package.json)) choose yarn/pnpm/npm accordingly
+```
+
+- Dockerfile-derived defaults: during prompts we scan a repo’s `Dockerfile` to suggest an install command from `RUN` lines (npm/yarn/pnpm/pip/dotnet/mvn/gradle/etc.).
+
+```695:768:src/prompts-manager/PromptsManager.ts
+private async getCommandsFromDockerfile(repoPath: string): Promise<{ installCommand: string | null; startupCommand: string | null }> {
+  // Parses RUN/CMD/ENTRYPOINT, classifies install commands and resolves startup
+}
+```
+
+Retries and error handling:
+
+```525:602:src/modes/execution/services/AppServiceManager.ts
+installWithRetry(...) with categorized suggestions on failure
+```
+
+### Build command
+
+- For many frameworks, build is part of install or not required for dev (e.g., `npm run start`).
+- If a build is needed, `FrameworkDetector` exposes `buildCommand` (e.g., `ng build`, `npm run build`, `dotnet build`, `mvn package`, `gradle build`).
+- When in Docker/hybrid, images are built via `docker-compose build` instead of per-repo commands.
+
+```630:664:src/modes/execution/services/FrameworkDetector.ts
+returns framework-specific build commands when applicable
+```
+
+- Dockerfile-derived defaults: if a `Dockerfile` exists, its detected install and startup commands are used as defaults in the prompts (and can be overridden).
+
+```270:305:src/prompts-manager/PromptsManager.ts
+// For each selected repo:
+const { installCommand: dockerfileInstallCommand, startupCommand: dockerfileStartupCommand } = await this.getCommandsFromDockerfile(repoPath);
+if (dockerfileInstallCommand) repoInstallCommand = dockerfileInstallCommand;
+if (dockerfileStartupCommand) repoStartupCommand = dockerfileStartupCommand;
+```
+
+```537:545:src/modes/execution/services/DockerComposeManager.ts
+docker-compose -f docker-compose.unified.yml build --progress=plain
+```
+
+### Start command
+
+- If repo runs in Docker mode (global or per-repo) → `docker-compose up` managed by unified compose.
+- Else (local mode):
+  - Custom per-repo/global `startupCommand` if supplied
+  - Else `FrameworkDetector.startupCommand` (e.g., `npm run start`, `dotnet run`, `mvn spring-boot:run`)
+  - Else Dockerfile-derived `CMD`/`ENTRYPOINT` merged as the default suggestion during prompts
+
+### How per-repo overrides are collected
+
+- During interactive prompts, when picking Local/Hybrid, you can choose repos to override and enter custom install/start commands per repo.
+- Those values are stored in `UnifiedConfig.repoConfigs` and used by `getExecutionConfig()`.
+
+```471:517:src/prompts-manager/PromptsManager.ts
+prompts for custom install/startup per repo when overriding
+```
+
+### Docker vs Local summary
+
+- Local mode: runs package manager commands directly and spawns dev processes.
+- Docker/hybrid: builds images and orchestrates via unified compose; local install steps are skipped.
+
+### Files impacted
+
+- Local mode: no extra files for commands.
+- Docker/hybrid: `docker-compose.unified.yml` and infra compose files are generated; images built, containers started.
+
+### Troubleshooting tips
+
+- If install fails: check network/proxy, package manager logs, permissions; see categorized suggestions in logs.
+- If start fails: check port conflicts, missing binaries, configuration, and dependency services or vpn for dbs.
+- For Docker: check image pulls, build context, healthchecks, and host port mappings.
