@@ -15,6 +15,10 @@
   "engines": {
     "node": "20.x"
   },
+  "optionalDependencies": {
+    "@parcel/watcher": "^2.5.1",
+    "@parcel/watcher-linux-x64-glibc": "^2.5.1"
+  },
   "dependencies": {
     "@mdx-js/mdx": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
@@ -40,14 +44,16 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
+    "@types/node": "^24.3.1",
+    "@types/parse-json": "^4.0.2",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "@types/react-helmet": "^6.1.11",
     "autoprefixer": "^10.4.19",
+    "gatsby-cli": "^5",
     "postcss": "^8.4.41",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.9",
-    "typescript": "^5.5.4",
-    "gatsby-cli": "^5"
+    "typescript": "^5.5.4"
   }
 }
