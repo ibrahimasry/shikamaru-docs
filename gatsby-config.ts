@@ -8,6 +8,7 @@ const config: GatsbyConfig = {
     description:
       "Spin up multi-repo dev environments with env management, port allocation, Docker/Hybrid orchestration, and web logs.",
     author: "@ibrahimasry",
+    image: "/0.png",
   },
   plugins: [
     "gatsby-plugin-image",

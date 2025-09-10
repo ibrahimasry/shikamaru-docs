@@ -18,7 +18,7 @@ const HomePage: React.FC = () => {
               <span className="font-semibold">env management</span>,{" "}
               <span className="font-semibold">port allocation</span>,{" "}
               <span className="font-semibold">Docker/Hybrid orchestration</span>
-              , and real-time logs.
+              , and real-time interactive centralized logs.
             </p>
             <div className="mt-8 flex gap-3">
               <a
@@ -65,7 +65,10 @@ const HomePage: React.FC = () => {
             [".env generation", "From .env.example + cloud + globals."],
             ["Port allocation", "Avoid conflicts. Persist across runs."],
             ["Docker/Hybrid modes", "Run locally, in Docker, or mix."],
-            ["log viewer", "real-time logs in web or terminal."],
+            [
+              "log viewer",
+              "real-time interactive centralized logs in web or terminal.",
+            ],
             ["Infra inference", "Auto decide Docker vs external DB/queues."],
           ].map(([title, desc], i) => (
             <div
