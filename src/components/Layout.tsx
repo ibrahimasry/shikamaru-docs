@@ -73,7 +73,7 @@ const Header: React.FC<{ onOpenSearch: () => void }> = ({ onOpenSearch }) => {
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200 supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/80 dark:supports-[backdrop-filter]:bg-slate-950/60 dark:border-slate-800">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3" aria-label="Home">
-          <img src="/0.png" alt="shikamaru" className="h-30 w-10 md:h-12" />
+          <img src="/icon.png" alt="shikamaru" className="h-30 w-10 md:h-12" />
         </Link>
         <nav className="flex items-center gap-1 flex-shrink-0">
           <span className="hidden sm:inline">
@@ -162,6 +162,7 @@ const Layout: React.FC<{
         <title>{title ? `${title} — shikamaru` : "shikamaru CLI"}</title>
         {description && <meta name="description" content={description} />}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/icon.png" sizes="any" type="image/png" />
       </Helmet>
       <Header onOpenSearch={() => setIsSearchOpen(true)} />
       <main>{children}</main>

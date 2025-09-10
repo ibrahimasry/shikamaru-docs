@@ -8,7 +8,7 @@ const config: GatsbyConfig = {
     description:
       "Spin up multi-repo dev environments with env management, port allocation, Docker/Hybrid orchestration, and web logs.",
     author: "@ibrahimasry",
-    image: "/0.png",
+    image: "/icon.png",
   },
   plugins: [
     "gatsby-plugin-image",
@@ -16,6 +16,18 @@ const config: GatsbyConfig = {
     "gatsby-transformer-sharp",
     "gatsby-plugin-react-helmet",
     "gatsby-plugin-postcss",
+    {
+      resolve: "gatsby-plugin-manifest",
+      options: {
+        name: "shikamaru CLI",
+        short_name: "shikamaru",
+        start_url: "/",
+        background_color: "#0b1220",
+        theme_color: "#2d96ff",
+        display: "standalone",
+        icon: "src/images/icon.png",
+      },
+    },
     {
       resolve: "gatsby-source-filesystem",
       options: {

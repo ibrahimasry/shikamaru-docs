@@ -10,7 +10,7 @@ type SEOProps = {
 };
 
 const siteUrl = "https://maru.ibrahimasry.com";
-const defaultImage = "/0.png";
+const defaultImage = "/icon.png";
 
 const SEO: React.FC<SEOProps> = ({
   title,
