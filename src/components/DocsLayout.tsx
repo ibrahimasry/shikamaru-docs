@@ -206,7 +206,9 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
         <aside className="col-span-12 md:col-span-3 lg:col-span-3">
           <div className="sticky top-20">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <span className="text-slate-800 font-semibold">shikamaru</span>
+              <span className="text-slate-800 font-semibold dark:text-slate-200">
+                shikamaru
+              </span>
             </Link>
             <div
               ref={sidebarRef}
@@ -218,7 +220,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search docs..."
-                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                 />
               </div>
               <nav className="space-y-1">
@@ -230,8 +232,8 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
                     <Link
                       key={item.path}
                       to={item.path}
-                      activeClassName="bg-brand-50 text-brand-700 ring-1 ring-brand-100"
-                      className="block px-3 py-2 rounded-lg text-slate-700 hover:text-brand-700 hover:bg-brand-50"
+                      activeClassName="bg-brand-50 text-brand-700 ring-1 ring-brand-100 dark:bg-slate-800 dark:text-brand-300"
+                      className="block px-3 py-2 rounded-lg text-slate-700 hover:text-brand-700 hover:bg-brand-50 dark:text-slate-300 dark:hover:text-brand-300 dark:hover:bg-slate-800"
                     >
                       {item.title}
                     </Link>
@@ -242,10 +244,10 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
         </aside>
         <article
           ref={contentRef}
-          className="col-span-12 md:col-span-8 lg:col-span-7 prose"
+          className="col-span-12 md:col-span-8 lg:col-span-7 prose dark:prose-invert"
         >
           {children}
-          <div className="not-prose mt-12 pt-6 border-t border-slate-200 flex items-center justify-between text-sm">
+          <div className="not-prose mt-12 pt-6 border-t border-slate-200 flex items-center justify-between text-sm dark:border-slate-800">
             {(() => {
               const indexByTitle = title
                 ? docsNav.findIndex((d) => d.title === title)
@@ -267,11 +269,13 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
                     {prev ? (
                       <Link
                         to={prev.path}
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700"
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
                       >
-                        <span className="text-slate-400">←</span>
+                        <span className="text-slate-400 dark:text-slate-500">
+                          ←
+                        </span>
                         <span className="flex flex-col text-left">
-                          <span className="text-xs text-slate-500">
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
                             Previous
                           </span>
                           <span className="font-medium">{prev.title}</span>
@@ -285,13 +289,17 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
                     {next ? (
                       <Link
                         to={next.path}
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700"
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
                       >
                         <span className="flex flex-col text-right">
-                          <span className="text-xs text-slate-500">Next</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
+                            Next
+                          </span>
                           <span className="font-medium">{next.title}</span>
                         </span>
-                        <span className="text-slate-400">→</span>
+                        <span className="text-slate-400 dark:text-slate-500">
+                          →
+                        </span>
                       </Link>
                     ) : (
                       <span />
@@ -304,7 +312,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
         </article>
         <aside className="hidden md:block md:col-span-1 lg:col-span-2">
           <div className="sticky top-20">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 dark:text-slate-400">
               On this page
             </p>
             <nav className="text-sm space-y-1">
@@ -316,8 +324,8 @@ const DocsLayout: React.FC<DocsLayoutProps> = ({ title, children }) => {
                     "block px-2 py-1 rounded transition focus:outline-none focus:ring-2 focus:ring-brand-500 " +
                     (h.level === 3 ? "ml-4 " : "") +
                     (activeId === h.id
-                      ? "text-brand-700 bg-brand-50"
-                      : "text-slate-600 hover:text-slate-900")
+                      ? "text-brand-700 bg-brand-50 dark:text-brand-300 dark:bg-slate-800"
+                      : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white")
                   }
                 >
                   {h.text}

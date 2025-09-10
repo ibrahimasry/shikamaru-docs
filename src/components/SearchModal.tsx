@@ -82,31 +82,37 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 z-[100]">
       <div className="absolute inset-0 bg-slate-900/50" onClick={onClose} />
       <div className="absolute inset-x-0 top-20 mx-auto w-full max-w-2xl">
-        <div className="mx-4 rounded-xl bg-white shadow-xl ring-1 ring-slate-200">
-          <div className="border-b border-slate-200 px-4 py-3">
+        <div className="mx-4 rounded-xl bg-white shadow-xl ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+          <div className="border-b border-slate-200 px-4 py-3 dark:border-slate-800">
             <input
               ref={inputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search docs..."
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
             />
           </div>
           <ul className="max-h-96 overflow-y-auto py-2">
             {results.length === 0 ? (
-              <li className="px-4 py-3 text-sm text-slate-500">No results</li>
+              <li className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">
+                No results
+              </li>
             ) : (
               results.map((r) => (
                 <li key={r.path}>
                   <button
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-brand-50"
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-brand-50 dark:hover:bg-slate-800"
                     onClick={() => {
                       navigate(r.path);
                       onClose();
                     }}
                   >
-                    <div className="font-medium text-slate-800">{r.title}</div>
-                    <div className="text-xs text-slate-500">{r.path}</div>
+                    <div className="font-medium text-slate-800 dark:text-slate-200">
+                      {r.title}
+                    </div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                      {r.path}
+                    </div>
                   </button>
                 </li>
               ))

@@ -4,6 +4,7 @@ import { Link } from "gatsby";
 import SearchModal from "./SearchModal";
 import "../styles.css";
 import { SiNpm } from "react-icons/si";
+import { FiMoon, FiSun } from "react-icons/fi";
 
 type NavLinkProps = {
   to: string;
@@ -13,8 +14,8 @@ type NavLinkProps = {
 const NavLink: React.FC<NavLinkProps> = ({ to, children }) => (
   <Link
     to={to}
-    activeClassName="bg-brand-50 text-brand-700"
-    className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium transition"
+    activeClassName="bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300"
+    className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium transition dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800"
   >
     {children}
   </Link>
@@ -22,6 +23,29 @@ const NavLink: React.FC<NavLinkProps> = ({ to, children }) => (
 
 const Header: React.FC<{ onOpenSearch: () => void }> = ({ onOpenSearch }) => {
   const [open, setOpen] = React.useState<boolean>(false);
+  const [isDark, setIsDark] = React.useState<boolean>(false);
+  React.useEffect(() => {
+    if (typeof document !== "undefined") {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    }
+  }, []);
+  const toggleTheme = React.useCallback(() => {
+    const next = !isDark;
+    setIsDark(next);
+    if (typeof document !== "undefined") {
+      const root = document.documentElement;
+      if (next) {
+        root.classList.add("dark");
+        (root as any).style.colorScheme = "dark";
+      } else {
+        root.classList.remove("dark");
+        (root as any).style.colorScheme = "light";
+      }
+      try {
+        window.localStorage.setItem("theme", next ? "dark" : "light");
+      } catch (e) {}
+    }
+  }, [isDark]);
   React.useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
@@ -46,7 +70,7 @@ const Header: React.FC<{ onOpenSearch: () => void }> = ({ onOpenSearch }) => {
   }, [onOpenSearch]);
 
   return (
-    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200 supports-[backdrop-filter]:bg-white/60">
+    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200 supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/80 dark:supports-[backdrop-filter]:bg-slate-950/60 dark:border-slate-800">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3" aria-label="Home">
           <img src="/0.png" alt="shikamaru" className="h-30 w-10 md:h-12" />
@@ -58,13 +82,25 @@ const Header: React.FC<{ onOpenSearch: () => void }> = ({ onOpenSearch }) => {
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenSearch}
-            className="hidden sm:flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="hidden sm:flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             aria-label="Search docs (Cmd/Ctrl+K)"
           >
             <span>Search</span>
             <span className="hidden md:inline-flex rounded border border-slate-300 px-1 text-[10px] text-slate-500">
               ⌘K
             </span>
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="inline-flex items-center justify-center rounded-md border border-slate-300 px-2.5 py-2 text-sm text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            aria-label="Toggle dark mode"
+            title="Toggle theme"
+          >
+            {isDark ? (
+              <FiSun className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <FiMoon className="h-4 w-4" aria-hidden="true" />
+            )}
           </button>
           <a
             className="btn-ghost"
@@ -77,7 +113,7 @@ const Header: React.FC<{ onOpenSearch: () => void }> = ({ onOpenSearch }) => {
             <SiNpm className="h-4 w-4" aria-hidden="true" />
           </a>
           <a
-            className="btn-primary"
+            className="btn-cta"
             href="https://github.com/ibrahimasry/shikamaru"
             target="_blank"
             rel="noreferrer"
@@ -104,8 +140,8 @@ const Header: React.FC<{ onOpenSearch: () => void }> = ({ onOpenSearch }) => {
 };
 
 const Footer: React.FC = () => (
-  <footer className="border-t border-slate-200 mt-20">
-    <div className="max-w-6xl mx-auto px-4 py-10 text-sm text-slate-500 flex items-center justify-between">
+  <footer className="border-t border-slate-200 mt-20 dark:border-slate-800">
+    <div className="max-w-6xl mx-auto px-4 py-10 text-sm text-slate-500 flex items-center justify-between dark:text-slate-400">
       <p>MIT © 2025 — shikamaru</p>
       <p>Made with love</p>
     </div>
@@ -119,7 +155,7 @@ const Layout: React.FC<{
 }> = ({ title, description, children }) => {
   const [isSearchOpen, setIsSearchOpen] = React.useState<boolean>(false);
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <Helmet>
         <title>{title ? `${title} — shikamaru` : "shikamaru CLI"}</title>
         {description && <meta name="description" content={description} />}
