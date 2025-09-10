@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 const config: GatsbyConfig = {
   siteMetadata: {
     title: "shikamaru CLI",
-    siteUrl: "https://shikamaru.ibrahimasry.com",
+    siteUrl: "https://maru.ibrahimasry.com",
     description:
       "Spin up multi-repo dev environments with env management, port allocation, Docker/Hybrid orchestration, and web logs.",
     author: "@ibrahimasry",
