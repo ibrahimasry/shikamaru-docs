@@ -1,14 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "public" }
-    }
-  ],
-  "env": {
-    "NODE_VERSION": "20"
-  },
-  "routes": [{ "src": "/(.*)", "dest": "/$1" }]
+  "buildCommand": "npm run build",
+  "outputDirectory": "public"
 }
