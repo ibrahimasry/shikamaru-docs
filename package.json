@@ -13,7 +13,7 @@
     "start:prod": "npm run build && npm run serve"
   },
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "dependencies": {
     "@mdx-js/mdx": "^2.3.0",
