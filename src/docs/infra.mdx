@@ -7,11 +7,10 @@ order: 4
 
 Infra is provisioned in Docker when host is blank/localhost/internal:
 
-| Service     | Docker when host is ..           | Docker default                                                |
-| ----------- | -------------------------------- | ------------------------------------------------------------- |
-| Postgres    | cluster / localhost / `internal` | `postgresql://default_user:default_password@postgres:5432`    |
-| TimescaleDB | cluster / localhost / `internal` | `postgresql://default_user:default_password@timescaledb:5432` |
-| Redis       | cluster / localhost / `internal` | `redis://redis:6379`                                          |
-| RabbitMQ    | cluster / localhost / `internal` | `amqp://guest:guest@rabbitmq:5672`                            |
+| Service  | Docker when host is ..           | Docker default                                             |
+| -------- | -------------------------------- | ---------------------------------------------------------- |
+| Postgres | cluster / localhost / `internal` | `postgresql://default_user:default_password@postgres:5432` |
+| Redis    | cluster / localhost / `internal` | `redis://redis:6379`                                       |
+| RabbitMQ | cluster / localhost / `internal` | `amqp://guest:guest@rabbitmq:5672`                         |
 
 Force external by setting a real host (corp/cloud). Force Docker by leaving host blank or using the docker hostname.
